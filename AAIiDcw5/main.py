@@ -1,96 +1,100 @@
-def add_matrices(A, B):
-    n = len(A)
-    steps = 0
-    result = [[0] * n for _ in range(n)]
+def dodaj_macierze(a, b):
+    wynik = []
+    kroki = 0
+    for i in range(len(a)):
+        wiersz = []
+        for j in range(len(a[0])):
+            wiersz.append(a[i][j] + b[i][j])
+            kroki += 1
+        wynik.append(wiersz)
+    return wynik, kroki
 
-    for i in range(n):
-        for j in range(n):
-            result[i][j] = A[i][j] + B[i][j]
-            steps += 1
-    return result, steps
+def mnoz_macierze(a, b):
+    wiersze_a = len(a)
+    kolumny_a = len(a[0])
+    kolumny_b = len(b[0])
+    wynik = [[0 for _ in range(kolumny_b)] for _ in range(wiersze_a)]
+    kroki = 0
+    for i in range(wiersze_a):
+        for j in range(kolumny_b):
+            for k in range(kolumny_a):
+                wynik[i][j] += a[i][k] * b[k][j]
+                kroki += 2  # mnożenie + dodanie
+    return wynik, kroki
 
-def multiply_matrices(A, B):
-    n = len(A)
-    m = len(A[0])
-    p = len(B[0])
-    steps = 0
+def transponuj_macierz(macierz):
+    wiersze = len(macierz)
+    kolumny = len(macierz[0])
+    wynik = [[0 for _ in range(wiersze)] for _ in range(kolumny)]
+    kroki = 0
+    for i in range(wiersze):
+        for j in range(kolumny):
+            wynik[j][i] = macierz[i][j]
+            kroki += 1
+    return wynik, kroki
 
-    result = [[0] * p for _ in range(n)]
+def wczytaj_macierz(wiersze, kolumny, numer):
+    print(f"\nPodaj dane dla macierzy {numer}:")
+    macierz = []
+    for i in range(wiersze):
+        wiersz = []
+        for j in range(kolumny):
+            val = int(input(f"Element [{i+1}][{j+1}]: "))
+            wiersz.append(val)
+        macierz.append(wiersz)
+    return macierz
 
-    for i in range(n):
-        for j in range(p):
-            for k in range(m):
-                result[i][j] += A[i][k] * B[k][j]
-                steps += 1
-    return result, steps
+def wyswietl_macierz(macierz):
+    for wiersz in macierz:
+        print(" ".join(str(x) for x in wiersz))
 
-def transpose_matrix(A):
-    n = len(A)
-    m = len(A[0])
-    result = [[0] * n for _ in range(m)]
+def menu():
+    while True:
+        print("\n--- MENU ---")
+        print("1. Dodawanie macierzy")
+        print("2. Mnożenie macierzy")
+        print("3. Transpozycja macierzy")
+        print("4. Wyjście")
+        wybor = input("Wybierz opcję: ")
 
-    for i in range(n):
-        for j in range(m):
-            result[j][i] = A[i][j]
-    return result
+        if wybor == "1":
+            m = int(input("Podaj liczbę wierszy: "))
+            n = int(input("Podaj liczbę kolumn: "))
+            a = wczytaj_macierz(m, n, 1)
+            b = wczytaj_macierz(m, n, 2)
+            wynik, kroki = dodaj_macierze(a, b)
+            print("\nWynik dodawania:")
+            wyswietl_macierz(wynik)
+            print(f"Liczba kroków: {kroki}")
 
-def print_matrix(matrix):
-    for row in matrix:
-        print(row)
+        elif wybor == "2":
+            m1 = int(input("Podaj liczbę wierszy pierwszej macierzy: "))
+            n1 = int(input("Podaj liczbę kolumn pierwszej macierzy: "))
+            m2 = int(input("Podaj liczbę wierszy drugiej macierzy: "))
+            n2 = int(input("Podaj liczbę kolumn drugiej macierzy: "))
+            if n1 != m2:
+                print("Nie można pomnożyć: liczba kolumn pierwszej ≠ liczba wierszy drugiej.")
+                continue
+            a = wczytaj_macierz(m1, n1, 1)
+            b = wczytaj_macierz(m2, n2, 2)
+            wynik, kroki = mnoz_macierze(a, b)
+            print("\nWynik mnożenia:")
+            wyswietl_macierz(wynik)
+            print(f"Liczba kroków: {kroki}")
 
-# --- MENU ---
-while True:
-    print("\n--- MENU ---")
-    print("1. Dodawanie macierzy")
-    print("2. Mnożenie macierzy")
-    print("3. Transpozycja macierzy")
-    print("4. Wyjście")
+        elif wybor == "3":
+            m = int(input("Podaj liczbę wierszy macierzy: "))
+            n = int(input("Podaj liczbę kolumn macierzy: "))
+            macierz = wczytaj_macierz(m, n, "")
+            wynik, kroki = transponuj_macierz(macierz)
+            print("\nWynik transpozycji:")
+            wyswietl_macierz(wynik)
+            print(f"Liczba kroków: {kroki}")
 
-    choice = input("Wybierz opcję (1-4): ")
+        elif wybor == "4":
+            print("Zamykanie programu...")
+            break
+        else:
+            print("Nieprawidłowa opcja, spróbuj ponownie.")
 
-    if choice == "1":
-        sizes = [2, 3, 4, 5]
-        for n in sizes:
-            A = [[1 for _ in range(n)] for _ in range(n)]
-            B = [[2 for _ in range(n)] for _ in range(n)]
-            result, steps = add_matrices(A, B)
-            print(f"\nDodawanie macierzy {n}x{n}: {steps} kroków")
-            print_matrix(result)
-
-    elif choice == "2":
-        test_cases = [
-            (2, 3, 4),
-            (3, 4, 5),
-            (4, 5, 4),
-            (4, 5, 5)
-        ]
-
-        for n, m, p in test_cases:
-            A = [[1 for _ in range(m)] for _ in range(n)]
-            B = [[2 for _ in range(p)] for _ in range(m)]
-            result, steps = multiply_matrices(A, B)
-            print(f"\nMnożenie macierzy {n}x{m} * {m}x{p}: {steps} kroków")
-            print_matrix(result)
-
-    elif choice == "3":
-        matrices = [
-            [[1, 2, 3], [4, 5, 6]],
-            [[7, 8], [9, 10], [11, 12]],
-            [[13, 14, 15, 16]],
-            [[17], [18], [19]]
-        ]
-
-        for idx, A in enumerate(matrices, start=1):
-            print(f"\nMacierz {len(A)}x{len(A[0])}:")
-            print("Oryginalna:")
-            print_matrix(A)
-
-            T = transpose_matrix(A)
-            print("Transponowana:")
-            print_matrix(T)
-
-    elif choice == "4":
-        print("Zamykanie programu...")
-        break
-    else:
-        print("Nieprawidłowa opcja. Wybierz 1-4.")
+menu()
